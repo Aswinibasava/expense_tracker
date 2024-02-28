@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, rgb(38, 80, 115), rgb(45, 149, 150));
+            transition: background 1s;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body:hover {
+            background: linear-gradient(45deg, rgb(45, 149, 150), rgb(38, 80, 115));
+        }
+
+        .container {
+            max-width: 400px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        button {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: rgb(154, 208, 194);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button.delete {
+            background-color: rgb(80, 200, 244);
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background-color: #3d8a9b;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            transition: background-color 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        li:hover {
+            background-color: #f0f0f0;
+        }
+
+        .delete-btn {
+            background-color: rgb(228, 177, 46);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            opacity: 1;
+            margin-left: 10px;
+            margin-top: 5px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d3912f;
+        }
+
+        .li-leave {
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <form id="expense-form">
+            <input type="text" id="item" placeholder="Enter Item" pattern="[A-Za-z ]+" title="Item cannot contain numbers">
+            <input type="number" id="cost" placeholder="Enter Cost">
+            <select id="category" style="font-size: 18px;">
+                <option value="Food">Food</option>
+                <option value="Books">Books</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Other">Other</option>
+            </select>
+            <button type="submit" id="add-expense">Add Expense</button>
+        </form>
+        <ul id="expense-list"></ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const expenseForm = document.getElementById('expense-form');
+            const expenseList = document.getElementById('expense-list');
+
+            expenseForm.addEventListener('submit', addExpense);
+
+            document.getElementById('item').addEventListener('input', function(event) {
+                if (!isNaN(this.value)) {
+                    this.setCustomValidity('Item cannot contain numbers');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+
+            function addExpense(event) {
+                event.preventDefault();
+
+                const itemInput = document.getElementById('item');
+                const costInput = document.getElementById('cost');
+                const categoryInput = document.getElementById('category');
+
+                const item = itemInput.value;
+                const cost = parseFloat(costInput.value);
+                const category = categoryInput.value;
+
+                if (item && !isNaN(cost)) {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${item}: $${cost.toFixed(2)} - ${category}</span>
+                        <button class="delete-btn delete">Delete</button>
+                    `;
+                    expenseList.appendChild(li);
+
+                    itemInput.value = '';
+                    costInput.value = '';
+                    categoryInput.value = 'Food';
+                } else {
+                    alert('Please enter valid item and cost!');
+                }
+            }
+
+            expenseList.addEventListener('click', deleteExpense);
+
+            function deleteExpense(event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const listItem = event.target.parentElement;
+                    listItem.classList.add('li-leave');
+                    setTimeout(() => {
+                        expenseList.removeChild(listItem);
+                    }, 500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
